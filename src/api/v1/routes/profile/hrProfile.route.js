@@ -10,6 +10,7 @@ const {
   getHRPostedApplications,
 } = require("../../controllers/profile/hrProfile.controller");
 const {
+  protect,
   hrprotect,
   adminprotect,
 } = require("../../../../middleware/auth.middleware");
@@ -22,6 +23,6 @@ router
   .patch(hrprotect, upload.single("file"), updateHrProfilePic);
 router.route("/experience").post(hrprotect, updateExperience);
 router.route("/experience/:id").delete(hrprotect, deleteExperience);
-router.route("/me").get(hrprotect, getMyProfile);
+router.route("/me").get(protect, getMyProfile);
 router.route("/myapplications").get(hrprotect, getHRPostedApplications);
 module.exports = router;

@@ -11,6 +11,7 @@ const {
   verifyUserForgotPassword,
   registerHr,
   checkAdminPer,
+  updatePassword,
 } = require("../../controllers/auth/auth.controller");
 const upload = require("../../../../middleware/multer");
 const { protect } = require("../../../../middleware/auth.middleware");
@@ -23,7 +24,9 @@ router
 router.post("/login", loginUser);
 router.route("/verify").post(protect, verifyUser);
 router.post("/otp", getOtp);
-router.route("/forgot/verify").post(protect, verifyUserForgotPassword);
+router.route("/forgot/verify").post(verifyUserForgotPassword);
 router.post("/forgot/otp", getForgotOTP);
+router.post("/update/password", updatePassword);
+
 router.route("/user").get(protect, getLoggedinUser);
 module.exports = router;

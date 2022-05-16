@@ -71,6 +71,7 @@ exports.registerHr = (req, res, next) => {
             userEmail: req.body.email,
             userName: req.body.userName,
             password: HashedPassword,
+            phoneNumber: req.body.phoneNumber,
             resume: result.url,
             role: "HR",
             qualification: req.body.qualification,
@@ -234,10 +235,12 @@ exports.getForgotOTP = async (req, res) => {
   });
 };
 exports.verifyUserForgotPassword = async (req, res, next) => {
-  var user = await Mail.findOne({ number: req.body.number });
-
+  console.log(req.body);
+  var user = await Mail.find();
+  console.log(Object.keys(user).length);
+  console.log(user[0].otp);
   if (user) {
-    if (parseInt(user.otp) !== parseInt(req.body.userOtp)) {
+    if (parseInt(user[0].otp) !== parseInt(req.body.userOtp)) {
       return next(createError(401, "OTP IS NOT VALID"));
     }
     let VerifiedUser = {
@@ -253,6 +256,23 @@ exports.verifyUserForgotPassword = async (req, res, next) => {
   } else {
     next(createError(404, "OTP expired try to resend it"));
   }
+};
+exports.updatePassword = async (req, res, next) => {
+  const user = await Users.find({ userEmail: req.body.userEmail });
+  let accessToken;
+  const salt = await bcrypt.genSalt(10);
+  const HashedPassword = await bcrypt.hash(req.body.password, salt);
+  accessToken = await signAccessToken(user[0].id, user[0].role);
+  user[0].password = HashedPassword;
+  console.log(user[0]);
+  user[0].save().then((data) => {
+    res.status(200).json({
+      statusCode: 200,
+      message: "success",
+      accessToken,
+      data,
+    });
+  });
 };
 exports.updateProfilePic = async (req, res, next) => {
   const id = req.user._id;
